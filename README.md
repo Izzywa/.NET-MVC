@@ -77,3 +77,96 @@ MVC architectural pattern:
     - enables work on one aspect of the implementation at a time without impacting the code of another
     - ex: can work on the view code without depending on the business logic
 
+## add a controller 
+add new file in `Controller` folder
+
+```C#
+using Microsoft.AspNetCore.Mvc;
+using System.Text.Encodings.Web;
+
+namespace MvcMovie.Controllers;
+
+public class HelloWorldController : Controller
+{
+    // 
+    // GET: /HelloWorld/
+    public string Index()
+    {
+        return "This is my default action...";
+    }
+    // 
+    // GET: /HelloWorld/Welcome/ 
+    public string Welcome()
+    {
+        return "This is the Welcome action method...";
+    }
+}
+```
+- every `public` method in a controller = callable as an HTTP endpoint
+
+HTTP endpoint:
+- a targetable URL in the web app
+- combines
+    - the protocol used: `HTTPS`
+    - the network location of the webserver
+        - including the TCP port: `localhost:5001`
+    - the target URI: `HelloWorld`
+
+MVC invokes controller classes
+- and the action methods within them depending on the incoming URL
+- default URL routing logic, uses format like this to determine what code to invoke
+```
+/[Controller]/[ActionName]/[Parameter]
+```
+
+routing format in the `Program.cs` file
+```C#
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+```
+browse app and don't supply URL segment = defaults to the "Home" controller + "Index" methods
+
+the preceding URL segments
+- first URL segment = determines the controller class to run
+    - `localhost:5001/HelloWorld` => HelloWorld controller class
+- second part of URL segment = the action method on the class
+    - `localhost:5001/HelloWorld/Index` = `Index` action of the `HelloWorldController` class to run
+- third part of the URL segment (`id`) = route data
+
+passing parameter information from the URL to the controller
+```C#
+// GET: /HelloWorld/Welcome/ 
+// Requires using System.Text.Encodings.Web;
+public string Welcome(string name, int numTimes = 1)
+{
+    return HtmlEncoder.Default.Encode($"Hello {name}, NumTimes is: {numTimes}");
+}
+```
+- uses `HtmlEncoder.Default.Encode` 
+    - protect the app from malicious input (such as through Js)
+
+    
+```HTTP
+http://localhost:5062/HelloWorld/Welcome?name=Rick&numtimes=4
+```
+- the URL segment `Parameters` isn't used
+- `name` and `numTimes` parameters are passed in the query string
+- the `?` is a separator, the query string follows
+- the `&` character separates field-value pairs
+
+the MVC [model binding](https://learn.microsoft.com/en-us/aspnet/core/mvc/models/model-binding?view=aspnetcore-9.0) system automatically maps the named parameters from the query to string to parameters in the method
+
+replace the `Welcome` method with 
+```C#
+public string Welcome(string name, int ID = 1)
+{
+    return HtmlEncoder.Default.Encode($"Hello {name}, ID: {ID}");
+}
+```
+run the following URL
+```HTTP
+https://localhost:{PORT}/HelloWorld/Welcome/3?name=Rick
+```
+- the third URL segment mathced the route parameter `id`
+- the `Welcome` method contains parameter `id` that matched the URL template in the `MappControllerRoute` method
