@@ -6,4 +6,11 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="JavaScriptEngineSwitcher.Extensions.MsDependencyInjection" Version="3.24.1" />
+    <PackageReference Include="JavaScriptEngineSwitcher.V8" Version="3.29.1" />
+    <PackageReference Include="JavaScriptEngineSwitcher.V8.Native.win-x64" Version="3.29.0" />
+    <PackageReference Include="React.AspNet" Version="5.2.12" />
+  </ItemGroup>
+
 </Project>

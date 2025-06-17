@@ -172,3 +172,126 @@ https://localhost:{PORT}/HelloWorld/Welcome/3?name=Rick
     - the trailing `?` in `id?` indicates the `id` parameter is optional
 - the `Welcome` method contains parameter `id` that matched the URL template in the `MappControllerRoute` method
 - the trailing `?` starts the query string
+
+# add a view to an ASP.NET Core MVC app
+ change the controller `HelloWorldController` `Index` method into:
+ ```C#
+ public IActionResult Index()
+{
+    return View();
+}
+ ```
+ - calls the controller's View method
+ - uses a view template to generate an HTML response
+
+ controller methods:
+ - referred to as action methods
+    - ex: the `Index` action method 
+    - return an `IActionResult` or a class derived from ActionResult
+
+## add a view
+- add a new folder _Views.HelloWorld_
+- add a new file into the folder, named `Index.cshtml`
+
+```CSHTML
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Index</h2>
+
+<p>Hello from our View Template!</p>
+```
+
+## tutorial is using Razor and I don't want to use it
+[Tutorial ReactJS.NET](https://reactjs.net/tutorials/aspnetcore.html)
+- install NuGet package "React.AspNet"
+- install a JS engine
+    - `JavaScriptEngineSwithcer.V8`
+- install the native assembly based on your architecture and engine choice
+    - `JavaScriptEngineSwitcher.V8.Native.win-x64`
+- install `JavaScriptEngineSwitcher.Extensions.MsDependencyInjection`
+
+### modify the main .cs file
+initialize ReactJS.NET
+
+```C#
+using Microsoft.AspNetCore.Http;
+using JavaScriptEngineSwitcher.V8;
+using JavaScriptEngineSwitcher.Extensions.MsDependencyInjection;
+using React.AspNet;
+```
+
+above the 
+```C#
+services.AddControllersWithViews();
+```
+add
+```C#
+services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+services.AddReact();
+
+// Make sure a JS engine is registered, or you will get an error!
+services.AddJsEngineSwitcher(options => options.DefaultEngineName = V8JsEngine.EngineName)
+  .AddV8();
+```
+
+above the code 
+```C#
+app.UseStaticFiles();
+```
+add
+```C#
+// Initialise ReactJS.NET. Must be before static files.
+app.UseReact(config =>
+{
+  // If you want to use server-side rendering of React components,
+  // add all the necessary JavaScript files here. This includes
+  // your components as well as all of their dependencies.
+  // See http://reactjs.net/ for more information. Example:
+  //config
+  //  .AddScript("~/js/First.jsx")
+  //  .AddScript("~/js/Second.jsx");
+
+  // If you use an external build too (for example, Babel, Webpack,
+  // Browserify or Gulp), you can improve performance by disabling
+  // ReactJS.NET's version of Babel and loading the pre-transpiled
+  // scripts. Example:
+  //config
+  //  .SetLoadBabel(false)
+  //  .AddScriptWithoutTransform("~/js/bundle.server.js");
+});
+```
+on top of `Views\_ViewImports.cshtml`
+```CSHTML
+@using React.AspNet
+```
+
+### create basic controller and view
+Create the `HomeController.cs` file in the `Controller` folder
+
+Create the `Views` > `Home` folder
+- add `Index.cshtml` view file
+```CSHTML
+@{
+    Layout = null;
+}
+<html>
+<head>
+  <title>Hello React</title>
+</head>
+<body>
+    <div id="content"></div>
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/16.13.0/umd/react.development.js"></script>
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/16.13.0/umd/react-dom.development.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/remarkable/1.7.1/remarkable.min.js"></script>
+<script src="@Url.Content("~/js/Tutorial.jsx")"></script>
+</body>
+</html>
+```
+- in a real ASP.NET MVC site, you'd use a layout
+- this tutorial keeps it simple, keep all HTML in one view file
+
+create a referenced JS file (`tutorial.jsx`)
+`wwwroot\js` > add `tutorial.jsx`
+- JS code will be written in this file
