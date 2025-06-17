@@ -20,7 +20,7 @@ public class HelloWorldController : Controller
         return HtmlEncoder.Default.Encode($"Hello {name}, NumTimes is: {numTimes}");
     }
 
-    public string GetId(int id, string name = "Stranger")
+    public string GetId(int id = 1, string name = "Stranger")
     {
         return HtmlEncoder.Default.Encode($"You selected id: {id}, {name}");
     }

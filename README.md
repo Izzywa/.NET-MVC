@@ -168,5 +168,7 @@ run the following URL
 ```HTTP
 https://localhost:{PORT}/HelloWorld/Welcome/3?name=Rick
 ```
-- the third URL segment mathced the route parameter `id`
+- the third URL segment mathced the route parameter `id` as defined in the routing template in the `Program.cs` file
+    - the trailing `?` in `id?` indicates the `id` parameter is optional
 - the `Welcome` method contains parameter `id` that matched the URL template in the `MappControllerRoute` method
+- the trailing `?` starts the query string
